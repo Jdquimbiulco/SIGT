@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}Mesa de Ayuda - Incidencias{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0"><i class="bi bi-life-preserver me-2"></i>Mesa de Ayuda</h4>
+    <a href="{% url 'mesa_ayuda:nueva' %}" class="btn btn-primary">
+        <i class="bi bi-plus-lg me-1"></i>Nueva Incidencia
+    </a>
+</div>
+
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label for="estado" class="form-label small text-muted">Estado</label>
+                <select name="estado" id="estado" class="form-select form-select-sm">
+                    <option value="">Todos</option>
+                    {% for value, label in estado_choices %}
+                    <option value="{{ value }}" {% if request.GET.estado == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="prioridad" class="form-label small text-muted">Prioridad</label>
+                <select name="prioridad" id="prioridad" class="form-select form-select-sm">
+                    <option value="">Todas</option>
+                    {% for value, label in prioridad_choices %}
+                    <option value="{{ value }}" {% if request.GET.prioridad == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4 d-flex gap-2">
+                <button type="submit" class="btn btn-sm btn-primary">
+                    <i class="bi bi-funnel me-1"></i>Filtrar
+                </button>
+                <a href="{% url 'mesa_ayuda:lista' %}" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-x-lg me-1"></i>Limpiar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 small">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Título</th>
+                        <th>Prioridad</th>
+                        <th>Estado</th>
+                        <th>Equipo</th>
+                        <th>Reportado por</th>
+                        <th>Técnico</th>
+                        <th>Fecha</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for inc in incidencias %}
+                    <tr>
+                        <td>{{ inc.pk }}</td>
+                        <td>{{ inc.titulo|truncatechars:50 }}</td>
+                        <td><span class="badge bg-{{ inc.prioridad_color }}">{{ inc.get_prioridad_display }}</span></td>
+                        <td><span class="badge bg-{{ inc.estado_color }}">{{ inc.get_estado_display }}</span></td>
+                        <td>{{ inc.equipo|default:"—" }}</td>
+                        <td>{% if inc.nombre_reportero %} {{ inc.nombre_reportero }} {% elif inc.creado_por %} {{ inc.creado_por.get_full_name|default:inc.creado_por.username }} {% else %}—{% endif %}</td>
+                        <td>{% if inc.tecnico_asignado %} {{ inc.tecnico_asignado.get_full_name|default:inc.tecnico_asignado.username }} {% else %}—{% endif %}</td>
+                        <td>{{ inc.fecha_creacion|date:"d/m/Y H:i" }}</td>
+                        <td class="text-end">
+                            <a href="{% url 'mesa_ayuda:detalle' inc.pk %}" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="9" class="text-center text-muted py-4">
+                            <i class="bi bi-inbox fs-4 d-block mb-1"></i>Sin incidencias registradas
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% if is_paginated %}
+    <div class="card-footer bg-white">
+        <nav>
+            <ul class="pagination pagination-sm mb-0">
+                {% if page_obj.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Anterior</a></li>
+                {% endif %}
+                <li class="page-item disabled"><span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span></li>
+                {% if page_obj.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Siguiente</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

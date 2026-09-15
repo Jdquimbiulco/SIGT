@@ -1,0 +1,249 @@
+{% extends "base.html" %}
+
+{% block title %}Reportes{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0"><i class="bi bi-bar-chart-line me-2"></i>Reportes del Sistema</h4>
+    <a href="{% url 'reportes:inventario' %}" class="btn btn-primary btn-sm">
+        <i class="bi bi-table me-1"></i>Reporte de Inventario
+    </a>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-lg-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h6 class="card-title"><i class="bi bi-geo-alt me-1"></i>Equipos por Ubicación</h6>
+                <div style="height: 300px;">
+                    <canvas id="chartUbicacion"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h6 class="card-title"><i class="bi bi-pie-chart me-1"></i>Equipos por Estado</h6>
+                <div style="height: 300px;">
+                    <canvas id="chartEstado"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h6 class="card-title"><i class="bi bi-graph-up me-1"></i>Incidencias por Mes</h6>
+                <div style="height: 300px;">
+                    <canvas id="chartIncidenciasMes"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h6 class="card-title"><i class="bi bi-flag me-1"></i>Incidencias por Prioridad</h6>
+                <div style="height: 300px;">
+                    <canvas id="chartPrioridad"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h6 class="card-title"><i class="bi bi-exclamation-triangle me-1"></i>Equipos con Más Fallas</h6>
+                <div style="height: 300px;">
+                    <canvas id="chartFallas"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h6 class="card-title"><i class="bi bi-tools me-1"></i>Mantenimientos por Período</h6>
+                <div style="height: 300px;">
+                    <canvas id="chartMantenimiento"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const COLORES = [
+    'rgba(59, 130, 246, 0.8)',
+    'rgba(34, 197, 94, 0.8)',
+    'rgba(245, 158, 11, 0.8)',
+    'rgba(239, 68, 68, 0.8)',
+    'rgba(168, 85, 247, 0.8)',
+    'rgba(6, 182, 212, 0.8)',
+    'rgba(236, 72, 153, 0.8)',
+    'rgba(132, 204, 22, 0.8)',
+    'rgba(99, 102, 241, 0.8)',
+    'rgba(251, 146, 60, 0.8)',
+];
+
+function makeChart(canvasId, config) {
+    const ctx = document.getElementById(canvasId);
+    if (!ctx) return;
+    new Chart(ctx, config);
+}
+
+function baseOpts(titulo) {
+    return {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { display: true, labels: { font: { size: 11 } } }
+        }
+    };
+}
+
+fetch("{% url 'reportes:api_equipos_ubicacion' %}")
+    .then(r => r.json())
+    .then(d => {
+        makeChart('chartUbicacion', {
+            type: 'bar',
+            data: {
+                labels: d.labels,
+                datasets: [{
+                    label: 'Equipos',
+                    data: d.data,
+                    backgroundColor: COLORES.slice(0, d.labels.length),
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                ...baseOpts(),
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, ticks: { stepSize: 1 } }
+                }
+            }
+        });
+    });
+
+fetch("{% url 'reportes:api_equipos_estado' %}")
+    .then(r => r.json())
+    .then(d => {
+        makeChart('chartEstado', {
+            type: 'doughnut',
+            data: {
+                labels: d.labels,
+                datasets: [{
+                    data: d.data,
+                    backgroundColor: COLORES.slice(0, d.labels.length),
+                    borderWidth: 2
+                }]
+            },
+            options: baseOpts()
+        });
+    });
+
+fetch("{% url 'reportes:api_incidencias_mes' %}")
+    .then(r => r.json())
+    .then(d => {
+        makeChart('chartIncidenciasMes', {
+            type: 'line',
+            data: {
+                labels: d.labels,
+                datasets: [{
+                    label: 'Incidencias',
+                    data: d.data,
+                    borderColor: 'rgba(59, 130, 246, 1)',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 4
+                }]
+            },
+            options: {
+                ...baseOpts(),
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, ticks: { stepSize: 1 } }
+                }
+            }
+        });
+    });
+
+fetch("{% url 'reportes:api_incidencias_prioridad' %}")
+    .then(r => r.json())
+    .then(d => {
+        makeChart('chartPrioridad', {
+            type: 'pie',
+            data: {
+                labels: d.labels,
+                datasets: [{
+                    data: d.data,
+                    backgroundColor: COLORES.slice(0, d.labels.length),
+                    borderWidth: 2
+                }]
+            },
+            options: baseOpts()
+        });
+    });
+
+fetch("{% url 'reportes:api_equipos_fallas' %}")
+    .then(r => r.json())
+    .then(d => {
+        makeChart('chartFallas', {
+            type: 'bar',
+            data: {
+                labels: d.labels,
+                datasets: [{
+                    label: 'Fallas',
+                    data: d.data,
+                    backgroundColor: 'rgba(239, 68, 68, 0.8)',
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                ...baseOpts(),
+                indexAxis: 'y',
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { beginAtZero: true, ticks: { stepSize: 1 } }
+                }
+            }
+        });
+    });
+
+fetch("{% url 'reportes:api_mantenimientos_periodo' %}")
+    .then(r => r.json())
+    .then(d => {
+        makeChart('chartMantenimiento', {
+            type: 'line',
+            data: {
+                labels: d.labels,
+                datasets: [{
+                    label: 'Mantenimientos',
+                    data: d.data,
+                    borderColor: 'rgba(34, 197, 94, 1)',
+                    backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 4
+                }]
+            },
+            options: {
+                ...baseOpts(),
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, ticks: { stepSize: 1 } }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

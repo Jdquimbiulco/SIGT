@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}Ubicación: {{ ubicacion.nombre }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0">
+        <i class="bi bi-geo-alt me-2"></i>{{ ubicacion.nombre }}
+        <small class="text-muted fs-6">({{ ubicacion.get_tipo_display }}{% if ubicacion.padre %} · pertenece a {{ ubicacion.padre.nombre }}{% endif %})</small>
+    </h4>
+    <div class="d-flex gap-2">
+        <a href="{% url 'inventario:ubicaciones' %}" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Volver
+        </a>
+        {% if perms.inventario.add_ubicacion %}
+        <a href="{% url 'inventario:ubicacion_nueva' %}?padre={{ ubicacion.pk }}" class="btn btn-sm btn-outline-primary">
+            <i class="bi bi-plus-lg me-1"></i>Nueva sub-ubicación
+        </a>
+        {% endif %}
+        {% if perms.inventario.change_ubicacion %}
+        <a href="{% url 'inventario:ubicacion_editar' ubicacion.pk %}" class="btn btn-sm btn-secondary">
+            <i class="bi bi-pencil me-1"></i>Editar
+        </a>
+        {% endif %}
+        {% if perms.inventario.delete_ubicacion %}
+        <a href="{% url 'inventario:ubicacion_eliminar' ubicacion.pk %}" class="btn btn-sm btn-outline-danger">
+            <i class="bi bi-trash me-1"></i>Eliminar
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-header bg-white fw-semibold">
+                <i class="bi bi-diagram-2 me-1"></i>Sub-ubicaciones
+            </div>
+            <div class="card-body p-0">
+                <ul class="list-group list-group-flush small">
+                    {% for sub in sububicaciones %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span><i class="bi bi-arrow-return-right me-1"></i>{{ sub.nombre }}</span>
+                        <span>
+                            {% if perms.inventario.change_ubicacion %}
+                            <a href="{% url 'inventario:ubicacion_editar' sub.pk %}" class="btn btn-sm btn-outline-secondary me-1" title="Editar"><i class="bi bi-pencil"></i></a>
+                            {% endif %}
+                            <a href="{% url 'inventario:ubicacion_detalle' sub.pk %}" class="btn btn-sm btn-outline-primary" title="Ver"><i class="bi bi-eye"></i></a>
+                        </span>
+                    </li>
+                    {% empty %}
+                    <li class="list-group-item text-center text-muted py-3">Sin sub-ubicaciones.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div class="card border-0 shadow-sm">
+            <div class="card-body small text-muted">
+                <div class="d-flex justify-content-between py-1"><span>Total de equipos</span><span class="fw-semibold">{{ ubicacion.total_equipos }}</span></div>
+                <div class="d-flex justify-content-between py-1"><span>Equipos directos</span><span class="fw-semibold">{{ ubicacion.total_equipos_directos }}</span></div>
+                <div class="d-flex justify-content-between py-1"><span>Edificio</span><span>{{ ubicacion.edificio|default:"—" }}</span></div>
+                <div class="d-flex justify-content-between py-1"><span>Salón</span><span>{{ ubicacion.salon|default:"—" }}</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white fw-semibold">
+                <i class="bi bi-pc-display me-1"></i>Equipos en esta ubicación
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 small align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Tipo</th>
+                                <th>Marca / Modelo</th>
+                                <th>Serie</th>
+                                <th>Aula</th>
+                                <th>Ubicación</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for equipo in equipos %}
+                            <tr>
+                                <td>{{ equipo.tipo_display }}</td>
+                                <td><a href="{% url 'inventario:detalle' equipo.pk %}">{{ equipo.marca }} {{ equipo.modelo }}</a></td>
+                                <td>{{ equipo.numero_serie }}</td>
+                                <td>{{ equipo.aula|default:"—" }}</td>
+                                <td>{{ equipo.ubicacion.nombre }}</td>
+                                <td>
+                                    {% if equipo.estado == 'activo' %}
+                                    <span class="badge bg-success">Activo</span>
+                                    {% elif equipo.estado == 'mantenimiento' %}
+                                    <span class="badge bg-warning text-dark">Mantenimiento</span>
+                                    {% else %}
+                                    <span class="badge bg-danger">Dado de baja</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-4">
+                                    <i class="bi bi-box-seam d-block fs-4 mb-1"></i>Sin equipos registrados aquí.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

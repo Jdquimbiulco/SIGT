@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}{{ view.title }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0">{{ view.title }}</h4>
+    <a href="{% url 'inventario:ubicaciones' %}" class="btn btn-sm btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i>Volver
+    </a>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        <form method="post" novalidate>
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+            {% endif %}
+
+            {% for field in form %}
+            <div class="mb-3">
+                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                <div class="form-text text-danger">{{ field.errors|striptags }}</div>
+                {% endif %}
+                {% if field.help_text %}
+                <div class="form-text">{{ field.help_text }}</div>
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-check-lg me-1"></i>Guardar
+                </button>
+                <a href="{% url 'inventario:ubicaciones' %}" class="btn btn-outline-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

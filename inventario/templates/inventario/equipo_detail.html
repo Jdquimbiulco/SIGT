@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}{{ equipo }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0">
+        {{ equipo }}
+        <small class="text-muted fs-6">· {{ equipo.numero_serie }}</small>
+    </h4>
+    <div class="d-flex gap-2">
+        <a href="{% url 'inventario:lista' %}" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Volver
+        </a>
+        {% if perms.inventario.change_equipo %}
+        <a href="{% url 'inventario:editar' equipo.pk %}" class="btn btn-primary btn-sm">
+            <i class="bi bi-pencil me-1"></i>Editar
+        </a>
+        {% endif %}
+        {% if perms.inventario.delete_equipo %}
+        <a href="{% url 'inventario:eliminar' equipo.pk %}" class="btn btn-outline-danger btn-sm">
+            <i class="bi bi-trash me-1"></i>Eliminar
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-5">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white fw-semibold">
+                <i class="bi bi-pc-display me-1 text-primary"></i>Información del Equipo
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0 small">
+                    <dt class="col-sm-4 text-muted fw-normal">Tipo</dt>
+                    <dd class="col-sm-8">{{ equipo.tipo_display }}</dd>
+
+                    <dt class="col-sm-4 text-muted fw-normal">Marca</dt>
+                    <dd class="col-sm-8">{{ equipo.marca }}</dd>
+
+                    <dt class="col-sm-4 text-muted fw-normal">Modelo</dt>
+                    <dd class="col-sm-8">{{ equipo.modelo }}</dd>
+
+                    <dt class="col-sm-4 text-muted fw-normal">N.° de Serie</dt>
+                    <dd class="col-sm-8"><code>{{ equipo.numero_serie }}</code></dd>
+
+                    <dt class="col-sm-4 text-muted fw-normal">Dirección IP</dt>
+                    <dd class="col-sm-8">{{ equipo.direccion_ip|default:"—" }}</dd>
+
+                    <dt class="col-sm-4 text-muted fw-normal">Ubicación</dt>
+                    <dd class="col-sm-8">{{ equipo.ubicacion }}</dd>
+
+                    <dt class="col-sm-4 text-muted fw-normal">Aula</dt>
+                    <dd class="col-sm-8">{{ equipo.aula|default:"—" }}</dd>
+
+                    {% if equipo.tipo == 'computadora' or equipo.tipo == 'laptop' %}
+                    <dt class="col-sm-4 text-muted fw-normal">Procesador</dt>
+                    <dd class="col-sm-8">{{ equipo.procesador|default:"—" }}</dd>
+
+                    <dt class="col-sm-4 text-muted fw-normal">Memoria RAM</dt>
+                    <dd class="col-sm-8">{{ equipo.ram|default:"—" }}</dd>
+
+                    <dt class="col-sm-4 text-muted fw-normal">Sistema Operativo</dt>
+                    <dd class="col-sm-8">{{ equipo.so|default:"—" }}</dd>
+
+                    <dt class="col-sm-4 text-muted fw-normal">Almacenamiento</dt>
+                    <dd class="col-sm-8">{{ equipo.almacenamiento|default:"—" }}</dd>
+                    {% endif %}
+
+                    <dt class="col-sm-4 text-muted fw-normal">Valor ($)</dt>
+                    <dd class="col-sm-8">{% if equipo.valor is not None %}${% endif %}{{ equipo.valor|floatformat:2|default:"—" }}</dd>
+
+                    <dt class="col-sm-4 text-muted fw-normal">Responsable</dt>
+                    <dd class="col-sm-8">{{ equipo.responsable|default:"—" }}</dd>
+
+                    <dt class="col-sm-4 text-muted fw-normal">Estado</dt>
+                    <dd class="col-sm-8">
+                        {% if equipo.estado == 'activo' %}
+                        <span class="badge bg-success">{{ equipo.get_estado_display }}</span>
+                        {% elif equipo.estado == 'mantenimiento' %}
+                        <span class="badge bg-warning text-dark">{{ equipo.get_estado_display }}</span>
+                        {% else %}
+                        <span class="badge bg-danger">{{ equipo.get_estado_display }}</span>
+                        {% endif %}
+                    </dd>
+
+                    <dt class="col-sm-4 text-muted fw-normal">Fecha de Registro</dt>
+                    <dd class="col-sm-8">{{ equipo.fecha_registro|date:"d/m/Y" }}</dd>
+
+                    <dt class="col-sm-4 text-muted fw-normal">Observaciones</dt>
+                    <dd class="col-sm-8">{{ equipo.observaciones|linebreaksbr|default:"—" }}</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white fw-semibold">
+                <i class="bi bi-clock-history me-1 text-primary"></i>Historial de Cambios
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 small align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Campo</th>
+                                <th>Valor Anterior</th>
+                                <th>Valor Nuevo</th>
+                                <th>Usuario</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cambio in historial_cambios %}
+                            <tr>
+                                <td class="text-nowrap">{{ cambio.fecha|date:"d/m/Y H:i" }}</td>
+                                <td>{{ cambio.campo }}</td>
+                                <td class="text-muted">{{ cambio.valor_anterior|default:"—" }}</td>
+                                <td>{{ cambio.valor_nuevo|default:"—" }}</td>
+                                <td>{% if cambio.usuario %}{{ cambio.usuario.get_full_name|default:cambio.usuario.username }}{% else %}—{% endif %}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-4">Sin cambios registrados.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

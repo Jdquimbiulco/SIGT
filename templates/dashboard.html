@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0">Dashboard</h4>
+    <span class="text-muted small">{{ "now"|date:"l d \d\e F \d\e Y" }}</span>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card kpi-card blue h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="text-muted small mb-1">Total Equipos</div>
+                        <h4 class="fw-bold mb-0">{{ total_equipos }}</h4>
+                    </div>
+                    <i class="bi bi-pc-display text-primary opacity-50" style="font-size:2rem;"></i>
+                </div>
+                <small class="text-muted">{{ equipos_activos }} activos</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card kpi-card yellow h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="text-muted small mb-1">Incidencias Abiertas</div>
+                        <h4 class="fw-bold mb-0">{{ incidencias_abiertas }}</h4>
+                    </div>
+                    <i class="bi bi-exclamation-triangle text-warning opacity-50" style="font-size:2rem;"></i>
+                </div>
+                <small class="text-muted">{{ incidencias_urgentes }} urgentes</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card kpi-card red h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="text-muted small mb-1">Mantenimientos Próximos</div>
+                        <h4 class="fw-bold mb-0">{{ mantenimientos_proximos }}</h4>
+                    </div>
+                    <i class="bi bi-wrench-adjustable text-danger opacity-50" style="font-size:2rem;"></i>
+                </div>
+                <small class="text-muted">próximos 7 días</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card kpi-card green h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="text-muted small mb-1">Resueltas este Mes</div>
+                        <h4 class="fw-bold mb-0">{{ incidencias_resueltas_mes }}</h4>
+                    </div>
+                    <i class="bi bi-check-circle text-success opacity-50" style="font-size:2rem;"></i>
+                </div>
+                <small class="text-muted">incidencias</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white fw-semibold">
+                <i class="bi bi-exclamation-circle text-danger me-1"></i>Incidencias Recientes
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 small">
+                        <thead class="table-light">
+                            <tr><th>#</th><th>Título</th><th>Prioridad</th><th>Estado</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for inc in incidencias_recientes %}
+                            <tr>
+                                <td>{{ inc.pk }}</td>
+                                <td>{{ inc.titulo|truncatechars:30 }}</td>
+                                <td><span class="badge bg-{{ inc.prioridad_color }}">{{ inc.get_prioridad_display }}</span></td>
+                                <td><span class="badge bg-{{ inc.estado_color }}">{{ inc.get_estado_display }}</span></td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="4" class="text-center text-muted py-3">Sin incidencias registradas</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white fw-semibold">
+                <i class="bi bi-calendar-check text-warning me-1"></i>Mantenimientos Próximos
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 small">
+                        <thead class="table-light">
+                            <tr><th>Equipo</th><th>Tipo</th><th>Fecha</th><th>Técnico</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for m in mantenimientos_lista %}
+                            <tr>
+                                <td>{{ m.equipo }}</td>
+                                <td>{{ m.get_tipo_display }}</td>
+                                <td>{{ m.fecha_programada|date:"d/m/Y" }}</td>
+                                <td>{% if m.tecnico %}{{ m.tecnico.get_full_name|default:m.tecnico.username }}{% else %}—{% endif %}</td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="4" class="text-center text-muted py-3">Sin mantenimientos programados</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

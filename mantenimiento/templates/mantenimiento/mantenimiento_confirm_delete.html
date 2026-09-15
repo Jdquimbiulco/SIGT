@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Eliminar Mantenimiento #{{ mantenimiento.pk }}{% endblock %}
+
+{% block content %}
+<div class="card border-0 shadow-sm" style="max-width: 600px;">
+    <div class="card-body p-4">
+        <h4 class="fw-bold mb-3">
+            <i class="bi bi-exclamation-triangle text-danger me-2"></i>Eliminar Mantenimiento #{{ mantenimiento.pk }}
+        </h4>
+        <p>
+            ¿Está seguro de que desea eliminar el mantenimiento
+            <strong>{{ mantenimiento.get_tipo_display }} - {{ mantenimiento.equipo }}</strong>
+            programado para el <strong>{{ mantenimiento.fecha_programada|date:"d/m/Y" }}</strong>?
+        </p>
+        <p class="text-muted small">Esta acción no se puede deshacer.</p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">
+                <i class="bi bi-trash me-1"></i>Eliminar
+            </button>
+            <a href="{% url 'mantenimiento:detalle' mantenimiento.pk %}" class="btn btn-outline-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

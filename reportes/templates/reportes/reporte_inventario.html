@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}Reporte de Inventario{% endblock %}
+
+{% block content %}
+<style>
+@media print {
+    .no-print { display: none !important; }
+}
+.table-reporte th {
+    background-color: #f1f5f9;
+    white-space: nowrap;
+}
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="fw-bold mb-0"><i class="bi bi-table me-2"></i>Reporte de Inventario</h4>
+    <div>
+        <button class="btn btn-primary btn-sm no-print" onclick="window.print()">
+            <i class="bi bi-printer me-1"></i>Imprimir
+        </button>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm mb-3 no-print">
+    <div class="card-body py-3">
+        <form method="get" class="row g-2 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label small text-muted mb-1">Tipo</label>
+                <select name="tipo" class="form-select form-select-sm">
+                    <option value="">Todos</option>
+                    {% for value, label in tipo_choices %}
+                    <option value="{{ value }}" {% if tipo_reporte == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small text-muted mb-1">Estado</label>
+                <select name="estado" class="form-select form-select-sm">
+                    <option value="">Todos</option>
+                    {% for value, label in estado_choices %}
+                    <option value="{{ value }}" {% if estado == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small text-muted mb-1">Área / Ubicación</label>
+                <select name="area" class="form-select form-select-sm">
+                    <option value="">Todas</option>
+                    {% for u in ubicaciones_lista %}
+                    <option value="{{ u.pk }}" {% if area_reporte == u.pk|stringformat:"s" %}selected{% endif %}>{{ u.nombre_completo }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-funnel me-1"></i>Filtrar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h6 class="fw-semibold mb-0">
+                Inventario de Equipos
+                <span class="text-muted fw-normal small">— {{ fecha_reporte|date:"d/m/Y H:i" }}</span>
+            </h6>
+            <span class="badge bg-dark">{{ total_equipos }} equipo(s)</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle text-nowrap mb-0 table-reporte">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Área</th>
+                        <th>Marca</th>
+                        <th>Modelo</th>
+                        <th>Tipo</th>
+                        <th>Procesador</th>
+                        <th>RAM</th>
+                        <th>Sistema Operativo</th>
+                        <th>Almacenamiento</th>
+                        <th>Valor ($)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for equipo in equipos %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ equipo.ubicacion.nombre }}</td>
+                        <td>{{ equipo.marca }}</td>
+                        <td>{{ equipo.modelo }}</td>
+                        <td>{{ equipo.tipo_display }}</td>
+                        <td>{{ equipo.procesador|default:"—" }}</td>
+                        <td>{{ equipo.ram|default:"—" }}</td>
+                        <td>{{ equipo.so|default:"—" }}</td>
+                        <td>{{ equipo.almacenamiento|default:"—" }}</td>
+                        <td class="text-end">{{ equipo.valor|floatformat:2|default:"—" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="10" class="text-center text-muted py-4">No hay equipos para mostrar.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr class="fw-bold">
+                        <th colspan="9" class="text-end">Valor Total ($)</th>
+                        <th class="text-end">${{ total_valor|floatformat:2 }}</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

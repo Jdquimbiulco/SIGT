@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}Usuario {{ usuario.username }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0"><i class="bi bi-person-badge me-2"></i>{{ usuario.get_full_name|default:usuario.username }}</h4>
+    <div class="d-flex gap-2">
+        {% if perms.usuarios.change_user or user.is_superuser %}
+        <a href="{% url 'usuarios:editar' usuario.pk %}" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-pencil me-1"></i>Editar
+        </a>
+        {% endif %}
+        {% if perms.usuarios.delete_user or user.is_superuser %}
+        <a href="{% url 'usuarios:eliminar' usuario.pk %}" class="btn btn-outline-danger btn-sm">
+            <i class="bi bi-trash me-1"></i>Eliminar
+        </a>
+        {% endif %}
+        <a href="{% url 'usuarios:lista' %}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left me-1"></i>Volver
+        </a>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white fw-semibold">
+                <i class="bi bi-person me-1"></i>Información del Usuario
+            </div>
+            <div class="card-body">
+                <table class="table table-sm small mb-0">
+                    <tbody>
+                        <tr>
+                            <th class="text-muted fw-normal" style="width:40%">Nombre de usuario</th>
+                            <td>{{ usuario.username }}</td>
+                        </tr>
+                        <tr>
+                            <th class="text-muted fw-normal">Nombre</th>
+                            <td>{{ usuario.first_name|default:"—" }}</td>
+                        </tr>
+                        <tr>
+                            <th class="text-muted fw-normal">Apellido</th>
+                            <td>{{ usuario.last_name|default:"—" }}</td>
+                        </tr>
+                        <tr>
+                            <th class="text-muted fw-normal">Nombre completo</th>
+                            <td>{{ usuario.get_full_name|default:"—" }}</td>
+                        </tr>
+                        <tr>
+                            <th class="text-muted fw-normal">Email</th>
+                            <td>{{ usuario.email|default:"—" }}</td>
+                        </tr>
+                        <tr>
+                            <th class="text-muted fw-normal">Teléfono</th>
+                            <td>{{ usuario.telefono|default:"—" }}</td>
+                        </tr>
+                        <tr>
+                            <th class="text-muted fw-normal">Rol</th>
+                            <td>
+                                <span class="badge {% if usuario.rol == 'admin' %}bg-danger{% elif usuario.rol == 'tecnico' %}bg-info{% else %}bg-secondary{% endif %}">
+                                    {{ usuario.get_rol_display }}
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="text-muted fw-normal">Estado</th>
+                            <td>
+                                {% if usuario.is_active %}
+                                <span class="badge bg-success">Activo</span>
+                                {% else %}
+                                <span class="badge bg-secondary">Inactivo</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="text-muted fw-normal">Superusuario</th>
+                            <td>
+                                {% if usuario.is_superuser %}
+                                <i class="bi bi-check-circle text-success"></i> Sí
+                                {% else %}
+                                <i class="bi bi-x-circle text-muted"></i> No
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="text-muted fw-normal">Fecha de registro</th>
+                            <td>{{ usuario.date_joined|date:"d/m/Y H:i" }}</td>
+                        </tr>
+                        <tr>
+                            <th class="text-muted fw-normal">Última conexión</th>
+                            <td>{{ usuario.last_login|date:"d/m/Y H:i"|default:"—" }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white fw-semibold">
+                <i class="bi bi-shield-lock me-1"></i>Permisos Asignados
+            </div>
+            <div class="card-body">
+                {% with permisos=usuario.get_all_permissions %}
+                {% if permisos %}
+                <div class="d-flex flex-wrap gap-1">
+                    {% for permiso in permisos %}
+                    <span class="badge bg-light text-dark border">{{ permiso }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center text-muted py-3">
+                    <i class="bi bi-shield d-block mb-1"></i>Sin permisos asignados
+                </div>
+                {% endif %}
+                {% endwith %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

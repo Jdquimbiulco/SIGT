@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}Mantenimiento{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0"><i class="bi bi-tools me-2"></i>Mantenimientos</h4>
+    <div class="d-flex gap-2">
+        <a href="{% url 'mantenimiento:alertas' %}" class="btn btn-outline-warning">
+            <i class="bi bi-bell me-1"></i>Alertas
+        </a>
+        <a href="{% url 'mantenimiento:nuevo' %}" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-1"></i>Nuevo Mantenimiento
+        </a>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label for="estado" class="form-label small text-muted">Estado</label>
+                <select name="estado" id="estado" class="form-select form-select-sm">
+                    <option value="">Todos</option>
+                    {% for value, label in estado_choices %}
+                    <option value="{{ value }}" {% if filtro_estado == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="tipo" class="form-label small text-muted">Tipo</label>
+                <select name="tipo" id="tipo" class="form-select form-select-sm">
+                    <option value="">Todos</option>
+                    {% for value, label in tipo_choices %}
+                    <option value="{{ value }}" {% if filtro_tipo == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4 d-flex gap-2">
+                <button type="submit" class="btn btn-sm btn-primary">
+                    <i class="bi bi-funnel me-1"></i>Filtrar
+                </button>
+                <a href="{% url 'mantenimiento:lista' %}" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-x-lg me-1"></i>Limpiar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 small">
+                <thead class="table-light">
+                    <tr>
+                        <th>Equipo</th>
+                        <th>Tipo</th>
+                        <th>Fecha Programada</th>
+                        <th>Técnico</th>
+                        <th>Estado</th>
+                        <th>Alerta</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for m in mantenimientos %}
+                    <tr {% if m.proximo_a_vencer %}class="table-warning"{% endif %}>
+                        <td>
+                            {% url 'inventario:detalle' m.equipo.pk as equipo_url %}
+                            {% if equipo_url %}
+                            <a href="{{ equipo_url }}" class="text-decoration-none">{{ m.equipo }}</a>
+                            {% else %}
+                            {{ m.equipo }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if m.tipo == 'preventivo' %}
+                            <span class="badge bg-info text-dark">{{ m.get_tipo_display }}</span>
+                            {% else %}
+                            <span class="badge bg-warning text-dark">{{ m.get_tipo_display }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ m.fecha_programada|date:"d/m/Y" }}</td>
+                        <td>{% if m.tecnico %}{{ m.tecnico.get_full_name|default:m.tecnico.username }}{% else %}—{% endif %}</td>
+                        <td>
+                            {% if m.estado == 'completado' %}
+                            <span class="badge bg-success">{{ m.get_estado_display }}</span>
+                            {% elif m.estado == 'en_proceso' %}
+                            <span class="badge bg-warning text-dark">{{ m.get_estado_display }}</span>
+                            {% elif m.estado == 'cancelado' %}
+                            <span class="badge bg-secondary">{{ m.get_estado_display }}</span>
+                            {% else %}
+                            <span class="badge bg-primary">{{ m.get_estado_display }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            {% if m.proximo_a_vencer %}
+                            <i class="bi bi-exclamation-triangle-fill text-warning" title="Próximo a vencer"></i>
+                            {% else %}
+                            <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            <a href="{% url 'mantenimiento:detalle' m.pk %}" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-4">
+                            <i class="bi bi-inbox fs-4 d-block mb-1"></i>Sin mantenimientos registrados
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% if is_paginated %}
+    <div class="card-footer bg-white">
+        <nav>
+            <ul class="pagination pagination-sm mb-0">
+                {% if page_obj.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Anterior</a></li>
+                {% endif %}
+                <li class="page-item disabled"><span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span></li>
+                {% if page_obj.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Siguiente</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

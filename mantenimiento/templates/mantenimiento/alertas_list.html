@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Mantenimiento - Alertas{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0"><i class="bi bi-bell me-2 text-warning"></i>Alertas de Mantenimiento</h4>
+    <a href="{% url 'mantenimiento:lista' %}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left me-1"></i>Volver
+    </a>
+</div>
+
+{% if alertas %}
+<div class="row g-3">
+    {% for m in alertas %}
+    <div class="col-md-6 col-xl-4">
+        <div class="card border-0 shadow-sm h-100 {% if m.proximo_a_vencer %}border-start border-4 border-warning{% else %}border-start border-4 border-primary{% endif %}">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h6 class="fw-bold mb-0">
+                        <i class="bi bi-tools me-1"></i>Mantenimiento #{{ m.pk }}
+                    </h6>
+                    <span class="badge bg-warning text-dark">{{ m.fecha_programada|date:"d/m/Y" }}</span>
+                </div>
+                <div class="small mb-3">
+                    <div class="d-flex justify-content-between py-1 border-bottom">
+                        <span class="text-muted">Equipo</span>
+                        <span class="fw-semibold text-end">{{ m.equipo }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between py-1 border-bottom">
+                        <span class="text-muted">Tipo</span>
+                        <span class="fw-semibold">{{ m.get_tipo_display }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between py-1 border-bottom">
+                        <span class="text-muted">Técnico</span>
+                        <span class="fw-semibold">{% if m.tecnico %}{{ m.tecnico.get_full_name|default:m.tecnico.username }}{% else %}—{% endif %}</span>
+                    </div>
+                    <div class="d-flex justify-content-between py-1">
+                        <span class="text-muted">Estado</span>
+                        <span class="badge bg-primary">{{ m.get_estado_display }}</span>
+                    </div>
+                </div>
+                {% if m.proximo_a_vencer %}
+                <div class="alert alert-warning py-2 px-3 mb-0 small">
+                    <i class="bi bi-exclamation-triangle-fill me-1"></i>Programado para los próximos 3 días.
+                </div>
+                {% else %}
+                <div class="alert alert-info py-2 px-3 mb-0 small">
+                    <i class="bi bi-info-circle me-1"></i>Programado dentro de los próximos 7 días.
+                </div>
+                {% endif %}
+                <a href="{% url 'mantenimiento:detalle' m.pk %}" class="btn btn-sm btn-outline-primary mt-3 w-100">
+                    <i class="bi bi-eye me-1"></i>Ver detalle
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card border-0 shadow-sm">
+    <div class="card-body text-center text-muted py-5">
+        <i class="bi bi-check-circle fs-2 d-block mb-2 text-success"></i>
+        No hay mantenimientos programados en los próximos 7 días.
+    </div>
+</div>
+{% endif %}
+{% endblock %}
