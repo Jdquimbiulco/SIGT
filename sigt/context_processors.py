@@ -10,6 +10,9 @@ def sidebar_context(request):
     if user.has_perm('inventario.view_equipo'):
         items.append({'label': 'Inventario', 'url': '/inventario/', 'icon': 'bi-pc-display'})
 
+    if user.has_perm('inventario.view_ubicacion'):
+        items.append({'label': 'Ubicaciones', 'url': '/inventario/ubicaciones/', 'icon': 'bi-geo-alt'})
+
     if user.has_perm('mesa_ayuda.view_incidencia'):
         items.append({'label': 'Mesa de Ayuda', 'url': '/mesa-ayuda/', 'icon': 'bi-tools'})
 

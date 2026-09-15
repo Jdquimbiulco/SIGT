@@ -5,11 +5,18 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h4 class="fw-bold mb-0">Inventario de Equipos</h4>
-    {% if perms.inventario.add_equipo %}
-    <a href="{% url 'inventario:nuevo' %}" class="btn btn-primary btn-sm">
-        <i class="bi bi-plus-lg me-1"></i>Nuevo Equipo
-    </a>
-    {% endif %}
+    <div class="d-flex gap-2">
+        {% if perms.inventario.view_ubicacion %}
+        <a href="{% url 'inventario:ubicaciones' %}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-geo-alt me-1"></i>Ubicaciones
+        </a>
+        {% endif %}
+        {% if perms.inventario.add_equipo %}
+        <a href="{% url 'inventario:nuevo' %}" class="btn btn-primary btn-sm">
+            <i class="bi bi-plus-lg me-1"></i>Nuevo Equipo
+        </a>
+        {% endif %}
+    </div>
 </div>
 
 <div class="card border-0 shadow-sm mb-4">
