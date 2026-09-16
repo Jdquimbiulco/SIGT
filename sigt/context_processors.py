@@ -1,9 +1,12 @@
+import json
+
+
 def sidebar_context(request):
     user = request.user
     items = []
 
     if not user.is_authenticated:
-        return {'sidebar_items': []}
+        return {'sidebar_items': [], 'main_paths': [], 'main_paths_json': '[]'}
 
     items.append({'label': 'Dashboard', 'url': '/', 'icon': 'bi-speedometer2'})
 
@@ -25,4 +28,10 @@ def sidebar_context(request):
     if user.has_perm('usuarios.view_user') or user.is_superuser:
         items.append({'label': 'Usuarios', 'url': '/usuarios/', 'icon': 'bi-people'})
 
-    return {'sidebar_items': items}
+    main_paths = [item['url'] for item in items]
+
+    return {
+        'sidebar_items': items,
+        'main_paths': main_paths,
+        'main_paths_json': json.dumps(main_paths),
+    }

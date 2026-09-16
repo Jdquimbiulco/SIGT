@@ -1,0 +1,297 @@
+/* ============================================================
+   SIGT - Liceo Campo Verde
+   Estilos globales: paleta institucional + usabilidad + responsive
+   ============================================================ */
+
+:root {
+    /* Paleta institucional */
+    --lcv-verde: #0EA570;
+    --lcv-verde-oscuro: #0B8A5E;
+    --lcv-lima: #D6D14D;
+    --lcv-blanco: #FFFFFF;
+    --lcv-claro: #C3E9DB;
+    --lcv-borde: #A3D9C4;
+
+    /* Layout */
+    --sidebar-width: 264px;
+
+    /* Accesibilidad: foco visible */
+    --focus-ring: 0 0 0 0.25rem rgba(14, 165, 112, 0.35);
+}
+
+/* ---------- Base ---------- */
+body {
+    min-height: 100vh;
+    background: #f4f6f9;
+    font-family: 'Poppins', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+    border-radius: 0.25rem;
+}
+
+a, .link-primary {
+    color: var(--lcv-verde-oscuro);
+}
+a:hover {
+    color: var(--lcv-verde);
+}
+
+/* ---------- Fuente institucional ---------- */
+.sidebar-brand .sidebar-nombre,
+.login-brand h3,
+h1, h2, h3, h4, h5, h6,
+.h4, .h5, .h6 {
+    font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif;
+    letter-spacing: 0.2px;
+}
+.sidebar-brand .sidebar-nombre,
+.login-brand h3 {
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+/* ---------- Botones ---------- */
+.btn {
+    border-radius: 0.5rem;
+}
+.btn-primary {
+    --bs-btn-bg: var(--lcv-verde);
+    --bs-btn-border-color: var(--lcv-verde);
+    --bs-btn-hover-bg: var(--lcv-verde-oscuro);
+    --bs-btn-hover-border-color: var(--lcv-verde-oscuro);
+    --bs-btn-active-bg: var(--lcv-verde-oscuro);
+    --bs-btn-active-border-color: var(--lcv-verde-oscuro);
+    --bs-btn-disabled-bg: var(--lcv-verde);
+    --bs-btn-disabled-border-color: var(--lcv-verde);
+    --bs-btn-focus-shadow-rgb: 14, 165, 112;
+}
+.btn-outline-primary {
+    --bs-btn-color: var(--lcv-verde);
+    --bs-btn-border-color: var(--lcv-verde);
+    --bs-btn-hover-bg: var(--lcv-verde);
+    --bs-btn-hover-border-color: var(--lcv-verde);
+    --bs-btn-active-bg: var(--lcv-verde);
+    --bs-btn-active-border-color: var(--lcv-verde);
+    --bs-btn-disabled-color: var(--lcv-verde);
+    --bs-btn-disabled-border-color: var(--lcv-verde);
+}
+
+/* ---------- Utilidades de color ---------- */
+.text-primary { color: var(--lcv-verde) !important; }
+.bg-primary { background-color: var(--lcv-verde) !important; }
+.border-primary { border-color: var(--lcv-verde) !important; }
+.text-success { color: var(--lcv-verde-oscuro) !important; }
+
+.form-check-input:checked {
+    background-color: var(--lcv-verde);
+    border-color: var(--lcv-verde);
+}
+
+/* Inputs con anillo de foco verde (usabilidad) */
+.form-control:focus,
+.form-select:focus,
+.input-group-text:focus-within {
+    border-color: var(--lcv-verde);
+    box-shadow: var(--focus-ring);
+}
+
+/* ---------- Sidebar ---------- */
+.sidebar {
+    width: var(--sidebar-width);
+    min-height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1040;
+    background: linear-gradient(180deg, var(--lcv-verde) 0%, var(--lcv-verde-oscuro) 100%);
+    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.12);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease;
+    overflow-y: auto;
+}
+.sidebar .sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.1rem 1.25rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+}
+.sidebar .sidebar-logo {
+    height: 54px;
+    width: auto;
+    border-radius: 12px;
+    padding: 3px;
+    background: var(--lcv-blanco);
+    object-fit: contain;
+}
+.sidebar .sidebar-nombre {
+    line-height: 1.15;
+    color: var(--lcv-blanco);
+}
+.sidebar .sidebar-ico {
+    font-size: 1.3rem;
+}
+.sidebar .nav {
+    flex: 1 1 auto;
+    padding: 0.75rem 0.5rem;
+}
+.sidebar .nav-link {
+    color: #eafff7;
+    padding: 0.7rem 1rem;
+    border-radius: 0.6rem;
+    margin: 2px 4px;
+    font-size: 0.92rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    transition: background 0.18s ease, color 0.18s ease;
+}
+.sidebar .nav-link:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.16);
+}
+.sidebar .nav-link.active {
+    color: var(--lcv-verde);
+    background: #fff;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+}
+.sidebar .sidebar-footer {
+    padding: 0.9rem 1.25rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.18);
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.75);
+}
+
+/* Overlay al abrir el menú en móvil */
+.sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1030;
+    background: rgba(0, 0, 0, 0.45);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+}
+.sidebar-backdrop.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* ---------- Contenido ---------- */
+.main-content {
+    margin-left: var(--sidebar-width);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    transition: margin-left 0.3s ease;
+}
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid #dee2e6;
+    padding: 0.7rem 1.5rem;
+}
+.content-body {
+    padding: 1.5rem;
+    max-width: 1600px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+/* ---------- Tarjetas ---------- */
+.card {
+    border: 0;
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08);
+}
+.card-header {
+    background: #fff;
+    border-bottom: 1px solid #eef1f4;
+}
+.progress-bar {
+    background-color: var(--lcv-verde);
+}
+
+/* ---------- KPIs ---------- */
+.kpi-card {
+    border-left: 4px solid;
+    border-radius: 0.75rem;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.12);
+}
+.kpi-card.blue   { border-left-color: var(--lcv-verde); }
+.kpi-card.green  { border-left-color: #22c55e; }
+.kpi-card.lima   { border-left-color: var(--lcv-lima); }
+.kpi-card.yellow { border-left-color: #f59e0b; }
+.kpi-card.red    { border-left-color: #ef4444; }
+
+/* ---------- Tablas ---------- */
+.table-reporte th {
+    background-color: var(--lcv-claro);
+    white-space: nowrap;
+}
+.table > :not(caption) > * > * {
+    padding: 0.6rem 0.75rem;
+}
+
+/* ---------- Componentes varios ---------- */
+.nav-pills .nav-link.active {
+    background-color: var(--lcv-verde);
+}
+.breadcrumb a {
+    color: var(--lcv-verde-oscuro);
+}
+.pagination .page-link {
+    color: var(--lcv-verde-oscuro);
+}
+.pagination .active > .page-link {
+    background-color: var(--lcv-verde);
+    border-color: var(--lcv-verde);
+}
+.dropdown-item:active {
+    background-color: var(--lcv-verde);
+}
+.badge {
+    border-radius: 0.4rem;
+    font-weight: 500;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 991.98px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+    .sidebar.show {
+        transform: translateX(0);
+    }
+    .main-content {
+        margin-left: 0;
+    }
+    .topbar {
+        padding: 0.6rem 1rem;
+    }
+    .content-body {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .content-body {
+        padding: 0.75rem;
+    }
+    .topbar .text-muted {
+        display: none;
+    }
+}

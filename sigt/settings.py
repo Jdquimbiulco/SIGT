@@ -3,9 +3,9 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-dz#i6co##%v(kn4ai=#$ik_!3+fudyoip)&jw(d3_(wgm@j^1c'
+SECRET_KEY = os.environ.get('SIGT_SECRET_KEY', 'django-insecure-dz#i6co##%v(kn4ai=#$ik_!3+fudyoip)&jw(d3_(wgm@j^1c')
 
-DEBUG = True
+DEBUG = os.environ.get('SIGT_DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = os.environ.get(
     'SIGT_ALLOWED_HOSTS',
@@ -96,6 +96,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 LOGIN_URL = '/usuarios/login/'
 LOGIN_REDIRECT_URL = '/'

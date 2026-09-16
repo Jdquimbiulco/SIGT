@@ -8,9 +8,12 @@
         <div class="card shadow-sm border-0">
             <div class="card-body p-5">
                 <div class="text-center mb-4">
-                    <i class="bi bi-hdd-network text-primary" style="font-size: 3rem;"></i>
-                    <h3 class="mt-2 fw-bold">SIGT</h3>
-                    <p class="text-muted small">Liceo Campo Verde</p>
+                    {% load static %}
+                    <img src="{% static 'images/Liceo_Campo_Verde_banner_color.png' %}" alt="Liceo Campo Verde"
+                         class="img-fluid mb-2" style="max-height: 90px;"
+                         onerror="this.style.display='none'">
+                    <h3 class="mt-2 fw-bold text-secondary">SIGT</h3>
+                    <p class="text-muted small">Sistema de Inventario, Gestión Técnica y Mantenimiento</p>
                 </div>
                 <form method="post" novalidate>
                     {% csrf_token %}
